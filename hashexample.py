@@ -1,4 +1,4 @@
-#Simple python code to generate and display an md5 hash from user input (from Simon)
+#Simple python code to generate and display an md5 hash from user input (from Isaac)
 import hashlib
 
 word = input("enter the word to hash:")
