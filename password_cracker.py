@@ -80,9 +80,9 @@ def DictionaryCrack():
     
     start_time = time.monotonic() #Check start time for cracking session
     
-    for word in password_file:
-        enc_word = word.encode('utf-8') #utf-8 encoding 
-        digest = hashlib.md5(enc_word.strip()).hexdigest() #md5 hash is computed for the word,strip of white spaces,hexadecimal format 
+    for word in password_file:        
+        enc_word = word.strip().encode('utf-8') #utf-8 encoding 
+        digest = str(hashlib.md5(enc_word.strip()).hexdigest()) #md5 hash is computed for the word,strip of white spaces,hexadecimal format 
         count += 1 #count is increased for every word check in the file
         if FindMatch(word.strip(), digest, count): #if hash is matched 
             return #End the for loop
@@ -196,12 +196,8 @@ while True:
     if run == 'close':
         break
 
-    #Get the password to be cracked (for testing purposes)
-    #Final implementation will ask for hash directly
-    word = input("Enter the word to hash:")
-    #Compute the md5 hash and convert to string format
-    pswd_hash = str(hashlib.md5(str.encode(word)).hexdigest())
-    #print("MD5 hash of ", word ," is: ", pswd_hash) #Debug
+    #Get the hash of the password to be cracked
+    pswd_hash = input("Enter the hash of the password you want to crack:")
 
     #Ask the user to choose dictionary or brute force method
     while True:
