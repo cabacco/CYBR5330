@@ -64,22 +64,17 @@ def BruteLenFive():
         if match:
             break
     return match
-'''End of Functions'''
 
-'''Main body of code runs as while loop to allow multiple cracking sessions'''
-while True:
-    #Give option to close program or run again
-    run = input("Type 'close' to exit the program, or any other key to continue:")
-    if run == 'close':
-        break
+'''This function conatains all the code for the dictionary method'''
+def DictionaryCrack():
 
-    #Get the password to be cracked (for testing purposes)
-    #Final implementation will ask for hash directly
-    word = input("Enter the word to hash:")
-    #Compute the md5 hash and convert to string format
-    pswd_hash = str(hashlib.md5(str.encode(word)).hexdigest())
-    #print("MD5 hash of ", word ," is: ", pswd_hash) #Debug
-
+    return
+'''This function contains the code for the brute force method'''
+def BruteForceCrack():
+    global possible_chars, num_guess, start_time
+    num_guess = 0 #Initialize guess counter
+    match = False #Initialize boolean that will become True when password is cracked
+    
     #Ask user to choose character set to use (loop in case of invalid user entry)
     while True:
         #Prompt user for choice
@@ -108,14 +103,11 @@ while True:
         else: #Error message if user does not choose 1-6
             print("Sorry, invalid option. Please try again")
             continue
-
-    num_guess = 0 #Initialize guess counter
-    match = False #Initialize boolean that will become True when password is cracked
-
+        
     #Ask user to choose maxmium password length (loop in case of invalid user entry)
     while True:
         #Prompt user for maximum length
-        max_len = int(input("Enter max password length (1-5) for brute force attack:"))
+        max_len = int(input("Enter max password length (1-5) for brute force attack: "))
         if max_len < 1 or max_len > 5: #Error message if user does not choose 1-5
             print("Sorry, invalid option. Please try again")
             continue
@@ -129,43 +121,74 @@ while True:
     #Program will stop cracking as soon as match is found
     if max_len == 1:
         if BruteLenOne(""):
-            continue
+            return
     elif max_len == 2:
         if BruteLenOne(""):
-            continue
+            return
         if BruteLenTwo(""):
-            continue
+            return
     elif max_len == 3:
         if BruteLenOne(""):
-            continue
+            return
         if BruteLenTwo(""):
-            continue
+            return
         if BruteLenThree(""):
-            continue
+            return
     elif max_len == 4:
         if BruteLenOne(""):
-            continue
+            return
         if BruteLenTwo(""):
-            continue
+            return
         if BruteLenThree(""):
-            continue
+            return
         if BruteLenFour(""):
-            continue
+            return
     elif max_len == 5:
         if BruteLenOne(""):
-            continue
+            return
         if BruteLenTwo(""):
-            continue
+            return
         if BruteLenThree(""):
-            continue
+            return
         if BruteLenFour(""):
-            continue
+            return
         if BruteLenFive():
-            continue
+            return
+        
     #Message to display if no password match is found
     if not match:
         end_time = time.monotonic()
         elapsed_time = end_time - start_time
         print("unable to crack password :(")
         print(f'({num_guess} passwords attempted in {elapsed_time} seconds)')
-        continue
+        return
+    
+'''End of Functions'''
+
+'''Main body of code runs as while loop to allow multiple cracking sessions'''
+while True:
+    #Give option to close program or run again
+    run = input("Type 'close' to exit the program, or any other key to continue: ")
+    if run == 'close':
+        break
+
+    #Get the password to be cracked (for testing purposes)
+    #Final implementation will ask for hash directly
+    word = input("Enter the word to hash:")
+    #Compute the md5 hash and convert to string format
+    pswd_hash = str(hashlib.md5(str.encode(word)).hexdigest())
+    #print("MD5 hash of ", word ," is: ", pswd_hash) #Debug
+
+    #Ask the user to choose dictionary or brute force method
+    while True:
+        method = input("Choose which cracking method to use\n1: Dictionary\n2: "
+                       "Brute Force\n")
+        if method != '1' and method != '2':#Error message if user does not choose 1 or 2
+            print("Sorry, invalid option. Please try again")
+            continue
+        break
+
+    if method == '1':
+        DictionaryCrack()
+    elif method == '2':
+        BruteForceCrack()
