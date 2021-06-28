@@ -10,16 +10,12 @@ def GetUserInput():
     #Ask for path of directory to write to
     return(binary_path, output_directory)
 
-'''Function to open the specified binary file and to create/open a file to write hashes'''
-def OpenFiles(binary_path, output_directory):
-    #Open binary file for reading using the path given
-    #Open (create) "hashes.txt" for writing
-    return(binary_file, hash_file)
-
 '''Function to calculates the hash of a carved file and write it to "hashes.txt"'''
 def WriteHash(output_directory, hash_file):
     #Calculate MD5 hash of file
-    #Write hash to hash file
+    #Open hash file
+    with open(hash_file_name, 'a'):
+        #Write hash to hash file
     return
 
 '''Function to display file type, location, and size (size is calculated using offsets)'''
