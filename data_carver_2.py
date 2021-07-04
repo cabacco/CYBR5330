@@ -1,6 +1,7 @@
 import hashlib #Library for computing hash values
 import re #Library for using regular expressions
 import string #Library for manipulating strings
+import os
 
 '''Define magic numbers'''
 PNG_SOF_string = '89504e470d0a1a0a'
@@ -16,8 +17,10 @@ PDF_EOF_string = '[0ad]{2,4}2525454f46[0ad]{0,4}00'
 def GetUserInput():
     #Ask for path of binary file
     #Ask for path of directory to write to
-    binary_path = 'carve.lab'
-    output_directory = 'Goff'
+#    binary_path = 'carve.lab' #debug
+    binary_path = 'midterm.dd' #debug
+#    output_directory = 'carveFiles' #debug
+    output_directory = 'midtermFiles' #debug
     return(binary_path, output_directory)
 
 '''Function to calculates the hash of a carved file and write it to "hashes.txt"'''
@@ -37,17 +40,27 @@ def DisplayFileInfo(file_type, SOF, EOF):
 
 '''Function to carve a file from the given binary data. This function will copy the data between
 the SOF and EOF and write that data to a new file.'''
-def CarveFile(file_type, SOF, EOF, type_counter):
+def CarveFile(file_type, SOF, EOF, type_counter, binary_data, output_directory):
+    #Copy data from binary_data between SOF and EOF
+    file_data = binary_data[int(SOF, 16):int(EOF, 16)]
+
     #Open new file for writing with name <type>-<type counter> (ex. “png-1”)
-    #Copy data between SOF and EOF
-    #Write data to file
-    print(f'{file_type}-{type_counter} found\nSOF: {SOF}\nEOF: {EOF}')
+    #and write data to file
+    newFileName = output_directory + "/" + file_type + '-' + str(type_counter)
+#    print(newFileName) # debug
+    file_newfile = open(newFileName, 'wb')
+    file_newfile.write(file_data)
+    file_newfile.close()
+
+    #Display file info
+    DisplayFileInfo(file_type, SOF, EOF)
+
     return
 
 '''Function to search binary file for carveable files. This function executes most of the
 program. If a file is found, the function will call the necessary functions to carve the file,
 store the hash, and display file info.'''
-def LocateFiles(file_type, SOF_string, EOF_string, hex_dump, output_directory, hash_file_name):
+def LocateFiles(file_type, SOF_string, EOF_string, hex_dump, output_directory, hash_file_name, binary_data):
     count = 0
     if file_type == 'png':
         modifier = 0
@@ -59,7 +72,7 @@ def LocateFiles(file_type, SOF_string, EOF_string, hex_dump, output_directory, h
         count += 1
         SOF_offset = hex((file.start()+1) // 2)
         EOF_offset = hex((file.end()-1-modifier) // 2)
-        CarveFile(file_type, SOF_offset, EOF_offset, count)
+        CarveFile(file_type, SOF_offset, EOF_offset, count, binary_data, output_directory)
         #DisplayFileInfo(file_type, SOF_offset, EOF_offset)
         #WriteHash(output_dir, hash_file_name)
     return
@@ -72,7 +85,7 @@ while True:
     run = input("Type 'close' to exit the program, or any other key to continue: ")
     if run == 'close':
         break
-    
+
     #Get binary file and output directory from user
     binary_path, output_dir = GetUserInput()
     #Create path for hash file
@@ -86,14 +99,14 @@ while True:
 
         #Call the LocateFiles function 3 times, one for each type
         print('\n') #Print new line to make output look better
-        LocateFiles('png', PNG_SOF_string, PNG_EOF_string, hex_dump, output_dir, hash_file_name)
+        LocateFiles('png', PNG_SOF_string, PNG_EOF_string, hex_dump, output_dir, hash_file_name, binary_data)
         print('\n')
-        LocateFiles('jpg', JPG_SOF_string, JPG_EOF_string, hex_dump, output_dir, hash_file_name)
+        LocateFiles('jpg', JPG_SOF_string, JPG_EOF_string, hex_dump, output_dir, hash_file_name, binary_data)
         print('\n')
-        LocateFiles('pdf', PDF_SOF_string, PDF_EOF_string, hex_dump, output_dir, hash_file_name)
+        LocateFiles('pdf', PDF_SOF_string, PDF_EOF_string, hex_dump, output_dir, hash_file_name, binary_data)
 
     #Display results
         #Print number of each file type
         #Print directory where files are saved
-        
+
 '''End of code'''
