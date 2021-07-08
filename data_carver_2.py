@@ -17,14 +17,15 @@ PDF_EOF_string = '[0ad]{2,4}2525454f46[0ad]{0,4}00'
 def GetUserInput():
     #Ask for path of binary file
     #Ask for path of directory to write to
-#    binary_path = 'carve.lab' #debug
-    binary_path = 'midterm.dd' #debug
-#    output_directory = 'carveFiles' #debug
-    output_directory = 'midtermFiles' #debug
+    binary_path = 'carve.lab' #debug
+#    binary_path = 'midterm.dd' #debug
+    output_directory = 'carveFiles' #debug
+#    output_directory = 'midtermFiles' #debug
     return(binary_path, output_directory)
 
 '''Function to calculates the hash of a carved file and write it to "hashes.txt"'''
-def WriteHash(output_directory, hash_file_name):
+def WriteHash(fileToHash, hash_file_name):
+    print("file is ", fileToHash) #debug
     #Calculate MD5 hash of file
     #Open hash file
     #with open(hash_file_name, 'a'):
@@ -33,6 +34,7 @@ def WriteHash(output_directory, hash_file_name):
 
 '''Function to display file type, location, and size (size is calculated using offsets)'''
 def DisplayFileInfo(file_type, SOF, EOF):
+    print("info is " + file_type + ", " + SOF + ", " + EOF) #debug
     #Print file type
     #Print memory offsets for SOF and EOF
     #Print file size (calculate using EOF-SOF)
@@ -40,7 +42,7 @@ def DisplayFileInfo(file_type, SOF, EOF):
 
 '''Function to carve a file from the given binary data. This function will copy the data between
 the SOF and EOF and write that data to a new file.'''
-def CarveFile(file_type, SOF, EOF, type_counter, binary_data, output_directory):
+def CarveFile(file_type, SOF, EOF, type_counter, binary_data, output_directory, hash_file_name):
     #Copy data from binary_data between SOF and EOF
     file_data = binary_data[int(SOF, 16):int(EOF, 16)]
 
@@ -54,6 +56,9 @@ def CarveFile(file_type, SOF, EOF, type_counter, binary_data, output_directory):
 
     #Display file info
     DisplayFileInfo(file_type, SOF, EOF)
+
+    #Compute and save the hash of the files
+    WriteHash(newFileName, hash_file_name)
 
     return
 
@@ -72,9 +77,8 @@ def LocateFiles(file_type, SOF_string, EOF_string, hex_dump, output_directory, h
         count += 1
         SOF_offset = hex((file.start()+1) // 2)
         EOF_offset = hex((file.end()-1-modifier) // 2)
-        CarveFile(file_type, SOF_offset, EOF_offset, count, binary_data, output_directory)
-        #DisplayFileInfo(file_type, SOF_offset, EOF_offset)
-        #WriteHash(output_dir, hash_file_name)
+        CarveFile(file_type, SOF_offset, EOF_offset, count, binary_data, output_directory, hash_file_name)
+
     return
 
 '''End of Functions'''
