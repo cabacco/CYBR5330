@@ -15,29 +15,42 @@ PDF_EOF_string = '[0ad]{2,4}2525454f46[0ad]{0,4}00'
 
 '''Function to get user input for binary file and directory for writing results'''
 def GetUserInput():
-    #Ask for path of binary file
+     #Ask for path of binary file
+    binary_path = input("Enter a path for the file to be carved: ")
     #Ask for path of directory to write to
-    binary_path = 'carve.lab' #debug
+    output_directory = input("Enter a path to save carved data: ")
+    return (binary_path,output_directory)
+   
+   # binary_path = 'carve.lab' #debug
 #    binary_path = 'midterm.dd' #debug
-    output_directory = 'carveFiles' #debug
+   # output_directory = 'carveFiles' #debug
 #    output_directory = 'midtermFiles' #debug
-    return(binary_path, output_directory)
 
 '''Function to calculates the hash of a carved file and write it to "hashes.txt"'''
-def WriteHash(fileToHash, hash_file_name):
-    print("file is ", fileToHash) #debug
+def WriteHash(newFileName, hash_file_name):
     #Calculate MD5 hash of file
     #Open hash file
     #with open(hash_file_name, 'a'):
         #Write hash to hash file
+    with open(newFileName, "rb") as f:
+     data = f.read()    
+     md5hash = hashlib.md5(data).hexdigest()
+     print("md5hash of" ,newFileName,"is" , md5hash)
+     with open(hash_file_name, 'a') as m:
+        m.write(md5hash+ '\n')
     return
 
 '''Function to display file type, location, and size (size is calculated using offsets)'''
 def DisplayFileInfo(file_type, SOF, EOF):
-    print("info is " + file_type + ", " + SOF + ", " + EOF) #debug
+  #  print("info is " + file_type + ", " + SOF + ", " + EOF) #debug
     #Print file type
     #Print memory offsets for SOF and EOF
     #Print file size (calculate using EOF-SOF)
+    print("File type :" ,file_type)
+    print("File SOF :" ,SOF)
+    print("File EOF :" ,EOF)
+    file_size= (int(EOF, 16) - int(SOF, 16))
+    print("file_size is:" ,file_size ,"bytes")
     return
 
 '''Function to carve a file from the given binary data. This function will copy the data between
