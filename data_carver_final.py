@@ -6,7 +6,7 @@ import os #Library to enable creation of directories
 PNG_SOF_string = '89504e470d0a1a0a'
 PNG_EOF_string = '49454e44ae426082'
 JPG_SOF_string = 'ffd8ffe[01]'
-JPG_EOF_string = 'ffd900'
+JPG_EOF_string = 'ffd9[02][0e]'
 PDF_SOF_string = '25504446'
 PDF_EOF_string = '[0ad]{2,4}2525454f46[0ad]{0,4}00'
 
