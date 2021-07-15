@@ -39,11 +39,8 @@ def EmbedSecret(carrier_image):
 
     #Store the new image as a new file (i.e. <carrier file name> + "-steg"
 
-    ComputeHash(carrier_file)
-    ComputeHash(new_file)
-
     #Print original and new file name, size, MD5 hash
-    
+    DisplayInfo()
     
     return
 
@@ -59,17 +56,26 @@ def ExtractSecret(steg_image):
 
     return
 
-''''''
-def ComputeHash():
+'''Function to compute MD5 hash of a file'''
+def ComputeHash(file_name):
 
-    #
-
+    with open(file_name, "rb") as f:
+        data = f.read()
+    md5 = hashlib.md5(data).hexdigest()
     return(md5)
 
 ''''''
 def DisplayInfo():
 
-    #
+    carrier_hash = ComputeHash(carrier_file)
+    stego_hash = ComputeHash(steg_file)
+
+    carrier_size = os.path.getsize(carrier_file)
+    stego_size = os.path.getsize(steg_file)
+    
+    #Print
+    print(f'\nOriginal Carrier Image:\nName: {carrier_file}\nSize:{carrier_size}\nMD5: {carrier_hash}')
+    print(f'\nStego Image:\nName: {steg_file}\nSize:{steg_size}\nMD5: {steg_hash}')
 
     return
 
@@ -128,7 +134,7 @@ while True:
         EmbedSecret(carrier_image)
         
     else:
-        steg_file = input('\nPlease enter the name of the ')
+        steg_file = input('\nPlease enter the name of the stego image in which the message is hidden: ')
         steg_image = cv2.imread(steg_file)
         ExtractSecret(steg_image)
 
