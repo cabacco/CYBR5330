@@ -62,7 +62,7 @@ def CarveFile(file_type, SOF, EOF, type_counter):
     file_data = binary_data[int(SOF, 16):int(EOF, 16)]
 
     #Open new file for writing with name <type>-<type counter> (ex. “png-1”)
-    new_file_name = file_type + '-' + str(type_counter)
+    new_file_name = file_type + '-' + str(type_counter) + '.' + file_type
     new_file_path = output_dir + new_file_name
     file_newfile = open(new_file_path, 'wb')
 
