@@ -27,7 +27,7 @@ def EmbedSecret(carrier_image):
 
     #Get the secret data as a binary string
     secret_binary = ChooseSecret()
-
+            
     #debug begin
     print('Image dimensions: ', carrier_image.shape)
     cv2.imshow('Carrier image', carrier_image)
@@ -47,7 +47,7 @@ def EmbedSecret(carrier_image):
     if lenSecret > numBitsCarrier:
         raise ValueError("The carrier image is too small to hide the message provided!")
     else:
-        print("Carrier file is large enough to hide message, procedding...") #debug
+        print("Carrier file is large enough to hide message, proceeding...") #debug
 
     #Embed the secret binary data in the LSBs of each pixel in carrier_image
         #Loop through pixel values in carrier_image
@@ -72,13 +72,43 @@ def ExtractSecret(steg_image):
 
     return
 
+'''Function to get secret data from user and return it in binary form'''
+def ChooseSecret():
+    while True:
+        #Get user input selection
+        print('\nYou may enter a secret message directly or choose a file to hide.')
+        choice = input('\n1: Enter message\n2: Choose file\nPlease enter "1" or "2": ')
+
+        #Get user message if choice is "1"
+        if choice == '1':
+            secret = input('\nPlease enter the message to hide: ')
+            print('Length of message: ', len(secret)) #debug
+
+            #Convert message to binary
+            secret_binary = ''.join([format(ord(character), "08b") for character in secret])
+
+        #Get file name if choice is "2"
+        elif choice == '2':
+            secret_file = input('\nPlease enter name of file to hide: ')
+            secret_binary = GetFileBinary(secret_file)
+            
+        #Append delimiter '$$$$$$$' to binary string
+        for i in range(7):
+            secret_binary += '00100100'
+            
+        print('length of binary message: ', len(secret_binary)) #debug
+        #print('type of binary message: ', type(secret_binary)) #debug
+        print('binary message: ', secret_binary) #debug, NOTE: this is reversed from expected
+        
+        return(secret_binary)
+
 '''Function to compute MD5 hash of a file'''
 def ComputeHash(file_name):
 
     with open(file_name, "rb") as f:
         data = f.read()
     md5 = hashlib.md5(data).hexdigest()
-    return(md5)
+    return(md5)    
 
 ''''''
 def DisplayInfo():
@@ -102,39 +132,8 @@ def GetFileBinary(file_name):
     with open(file_name, 'rb') as file:
         file_data = file.read()
         file_binary = ''.join([format(character, '08b') for character in file_data])
+        
     return(file_binary)
-
-'''Function to get secret data from user and return it in binary form'''
-def ChooseSecret():
-    while True:
-        #Get user input selection
-        print('\nYou may enter a secret message directly or choose a file to hide.')
-        choice = input('\n1: Enter message\n2: Choose file\nPlease enter "1" or "2": ')
-
-        #Get user message if choice is "1"
-        if choice == '1':
-            secret = input('\nPlease enter the message to hide: ')
-            #Add delimiter at the end of secret_binary
-            new_secret = secret + "$$$$$$$"
-            print('New message: ', new_secret) #debug
-            print('Length of message: ', len(new_secret)) #debug
-
-            #Convert message to binary
-            secret_binary = ''.join([format(ord(character), "08b") for character in new_secret])
-
-            print('length of binary message: ', len(secret_binary)) #debug
-            print('type of binary message: ', type(secret_binary)) #debug
-            print('binary message: ', secret_binary) #debug, NOTE: this is reversed from expected
-
-        #Get file name if choice is "2"
-        elif choice == '2':
-            secret_file = input('\nPlease enter name of file to hide: ')
-
-            #PROBLEM: WE ARE NOT ADDING THE DELIMITER IN THIS CASE BECAUSE WE
-            #ARE READING THE FILE IN AS BINARY
-            secret_binary = GetFileBinary(secret_file)
-
-        return(secret_binary)
 
 ''''''
 def Function():
