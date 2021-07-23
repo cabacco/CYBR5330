@@ -28,19 +28,10 @@ def EmbedSecret(carrier_image):
     #Get the secret data as a binary string
     secret_binary = ChooseSecret()
 
-    #debug begin
-    print('Image dimensions: ', carrier_image.shape)
-    cv2.imshow('Carrier image', carrier_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    #debug end
-
     #Check number of bits in secret_binary
     lenSecret = len(secret_binary)
-    print("bits in message = ", lenSecret) #debug
     #Calculate number of pixels in carrier_image
     numBitsCarrier = carrier_image.shape[0] * carrier_image.shape[1] * 3
-    print("bits in carrier = ", numBitsCarrier) #debug
     #If number of bits in secret_binary > number of pixels*3, output error message
     if lenSecret > numBitsCarrier:
         raise ValueError("The carrier image is too small to hide the message provided!")
@@ -48,59 +39,32 @@ def EmbedSecret(carrier_image):
         print("Carrier file is large enough to hide message, proceeding...") #debug
 
     #Embed the secret binary data in the LSBs of each pixel in carrier_image
+    #until all of the message plus deliminater has been inserted; the end could
+    #be reached part way through a pixel so we check for each channel (red,
+    # green, blue)
     pixelCount = 0
     for row in carrier_image:
-        print("shape of row: ", row.shape) #debug
-        print("pixelCount ", pixelCount, " lenSecret ", lenSecret) #debug
-        cv2.imshow('Carrier image', carrier_image) #debug
-        cv2.waitKey(0) #debug
-        cv2.destroyAllWindows() #debug
         for currentPixel in row:
-            print("pixelCount ", pixelCount, " lenSecret ", lenSecret) #debug
+            #Retrieve current values to be modified
             red, green, blue = [format(i, "08b") for i in currentPixel]
-            print("BEFORE: red ", red, ", green ", green, ", blue ", blue) #debug
             if pixelCount < lenSecret:
                 #stuff data from secret message into LSB of "red"
                 currentPixel[0] = int(red[:-1] + secret_binary[pixelCount], 2)
-
-                print("shape is: ", currentPixel[0].shape) #debug
-                print("value is: ", currentPixel[0]) #debug
-                print("pixelCount is: ", pixelCount) #debug
-                red, green, blue = [format(i, "08b") for i in currentPixel]
-                print("R AFTER, hid (", secret_binary[pixelCount], ")", ": red ", red, ", green ", green, ", blue ", blue) #debug
-
                 pixelCount += 1
             if pixelCount < lenSecret:
                 #stuff data from secret message into LSB of "green"
                 currentPixel[1] = int(green[:-1] + secret_binary[pixelCount], 2)
-
-                red, green, blue = [format(i, "08b") for i in currentPixel]
-                print("G AFTER, hid (", secret_binary[pixelCount], ")", ": red ", red, ", green ", green, ", blue ", blue) #debug
-
                 pixelCount += 1
             if pixelCount < lenSecret:
                 #stuff data from secret message into LSB of "blue"
                 currentPixel[2] = int(blue[:-1] + secret_binary[pixelCount], 2)
-
-                red, green, blue = [format(i, "08b") for i in currentPixel]
-                print("B AFTER, hid (", secret_binary[pixelCount], ")", ": red ", red, ", green ", green, ", blue ", blue) #debug
-
                 pixelCount += 1
-
             if pixelCount >= lenSecret:
                 break
         if pixelCount >= lenSecret: #allows us to break out early for short message
             break
 
-    #debug begin
-    print('Image dimensions: ', carrier_image.shape)
-    print("Has the image changed?")
-    cv2.imshow('Carrier image', carrier_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    #debug end
-
-    #Store the new image as a new file (i.e. <carrier file name> + "-steg.jpg"
+    #Store the modified image as a new file (i.e. <carrier file name> + "-steg.jpg"
     #NOTE: the extension with the file type, e.g. ".jpg" is required by cv2
     new_file_name = "jpg-1-steg.jpg"
     wasWritten = cv2.imwrite(new_file_name, carrier_image)
@@ -149,10 +113,6 @@ def ChooseSecret():
         #Append delimiter '$$$$$$$' to binary string
         for i in range(7):
             secret_binary += '00100100'
-
-        print('length of binary message: ', len(secret_binary)) #debug
-        #print('type of binary message: ', type(secret_binary)) #debug
-        print('binary message: ', secret_binary) #debug, NOTE: this is reversed from expected
 
         return(secret_binary)
 
