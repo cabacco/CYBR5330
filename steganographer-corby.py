@@ -87,8 +87,27 @@ def ExtractSecret(steg_image):
 
     #Change the secret_binary into ASCII text
     #Print the secret text
-
-    return
+  
+    encoded_data = ""
+    for row in steg_image:
+        for pixel in row:
+      #      r, g, b = [format(i, "08b") for i in pixel ]
+          #  r, g, b = to_bin(pixel)
+            r, g, b = [format(i, "08b") for i in pixel]
+            encoded_data += r[-1]
+            encoded_data += g[-1]
+            encoded_data += b[-1]
+    # split by 8-bits
+    all_bytes = [ encoded_data[i: i+8] for i in range(0, len(encoded_data), 8) ]
+    # convert from bits to characters
+    decoded_data = ""
+    for byte in all_bytes:
+        decoded_data += chr(int(byte, 2))
+        if decoded_data[-5:] == "=====":
+            break
+    
+    return decoded_data[:-5]
+    
 
 '''Function to get secret data from user and return it in binary form'''
 def ChooseSecret():
@@ -178,5 +197,7 @@ while True:
         steg_file = input('\nPlease enter the name of the stego image in which the message is hidden: ')
         steg_image = cv2.imread(steg_file)
         ExtractSecret(steg_image)
+        decoded_data = ExtractSecret(steg_image)
+        print("decoded data is " ,decoded_data)
 
 '''End of program'''
