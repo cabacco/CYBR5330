@@ -77,7 +77,7 @@ def EmbedSecret(carrier_image):
             break
 
     #regex to grab file name without extension
-    regex = re.compile('(\w)(?:[.])')
+    regex = re.compile('(\S+)(?:[.])')
     carrier_name = regex.match(carrier_file).group(1)
     #Store the modified image as a new file (i.e. <carrier file name> + "-steg.png"        
     #NOTE: the extension with the file type, e.g. ".png" is required by cv2
